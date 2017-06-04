@@ -13,7 +13,7 @@ cd ~/
 git clone https://github.com/kapucoin/kapu_snapshot.git
 cd kapu_snapshot
 sudo updatedb
-bash ark-snapshot.sh help
+bash kapu-snapshot.sh help
 ```
 ##Available commands
 
