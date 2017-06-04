@@ -11,7 +11,7 @@ Execute the following commands
 ```
 cd ~/
 git clone https://github.com/kapucoin/kapu_snapshot.git
-cd kapu-snapshot/
+cd kapu_snapshot
 sudo updatedb
 bash ark-snapshot.sh help
 ```
