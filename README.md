@@ -10,7 +10,7 @@ v0.3
 Execute the following commands
 ```
 cd ~/
-git clone https://github.com/ilgio/kapu-snapshot
+git clone https://github.com/kapucoin/kapu_snapshot.git
 cd kapu-snapshot/
 sudo updatedb
 bash ark-snapshot.sh help
