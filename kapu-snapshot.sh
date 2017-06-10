@@ -26,6 +26,14 @@ DB_USER=$USER
 DB_PASS="password"
 SNAPSHOT_COUNTER=snapshot/counter.json
 SNAPSHOT_LOG=snapshot/snapshot.log
+
+#FTP
+FTP_SERVER="ftp://kapu.one"
+FTP_USER="kapu_snapshot"
+FTP_PASS="QQef2y@T8Cf"
+
+
+
 if [ ! -f "snapshot/counter.json" ]; then
   mkdir -p snapshot
   sudo chmod a+x kapu-snapshot.sh
@@ -33,7 +41,7 @@ if [ ! -f "snapshot/counter.json" ]; then
   sudo chown postgres:${USER:=$(/usr/bin/id -run)} snapshot
   sudo chmod -R 777 snapshot
 fi
-SNAPSHOT_DIRECTORY=snapshot/
+SNAPSHOT_DIRECTORY="snapshot/"
 
 # Find parent PID
 function top_level_parent_pid {
@@ -95,7 +103,11 @@ create_snapshot() {
   echo " + Creating snapshot"
   echo "--------------------------------------------------"
   echo "..."
-  sudo su postgres -c "pg_dump -Ft $DB_NAME > $SNAPSHOT_DIRECTORY'kapu_db$NOW.snapshot.tar'"
+  
+  SnapshotFilename=$SNAPSHOT_DIRECTORY'kapu_db.snapshot.tar'
+  pg_dump -O "$DB_NAME" -Fc -Z6 > "$SnapshotFilename"
+
+  #sudo su postgres -c "pg_dump -Ft $DB_NAME > $SNAPSHOT_DIRECTORY'kapu_db.snapshot.tar'"
   blockHeight=`psql -d $DB_NAME -U $DB_USER -h localhost -p 5432 -t -c "select height from blocks order by height desc limit 1;"`
   dbSize=`psql -d $DB_NAME -U $DB_USER -h localhost -p 5432 -t -c "select pg_size_pretty(pg_database_size('$DB_NAME'));"`
 
@@ -103,6 +115,11 @@ create_snapshot() {
     echo "X Failed to create snapshot." | tee -a $SNAPSHOT_LOG
     exit 1
   else
+    SNAPSHOT_FILE=`ls -t snapshot/kapu_db* | head  -1`
+
+    curl -T "$SNAPSHOT_FILE" -u $FTP_USER:$FTP_PASS $FTP_SERVER
+
+
     echo "$NOW -- OK snapshot created successfully at block$blockHeight ($dbSize)." | tee -a $SNAPSHOT_LOG
   fi
 
@@ -128,32 +145,22 @@ restore_snapshot(){
     echo " "
     exit 1
   fi
-  echo "Snapshot to restore = $SNAPSHOT_FILE"
 
-  read -p "Please stop node app.js first, are you ready (y/n)? " -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-     echo "***** Please stop node.js first.. then execute restore again"
-     echo " "
-     exit 1
-  fi
+    
+    #snapshot restoring..
+    export PGPASSWORD=$DB_PASS
+   
+    pg_restore -O -j 8 -d kapu_testnet  $SNAPSHOT_FILE 2>/dev/null
+    #pg_restore -d $DB_NAME "$SNAPSHOT_FILE" -U $DB_USER -h localhost -c -n public
+
+    echo "OK snapshot restored successfully."
+
+  
+
   cd $kapudir
   forever start app.js -c ./config.testnet.json -g ./genesisBlock.testnet.json >&- 2>&-
   #forever start app.js --genesis genesisBlock.testnet.json --config config.testnet.json >&- 2>&-
   echo "    ✔ KAPU Node was successfully started"
-
-
-#snapshot restoring..
-  export PGPASSWORD=$DB_PASS
-  pg_restore -d $DB_NAME "$SNAPSHOT_FILE" -U $DB_USER -h localhost -c -n public
-
-  if [ $? != 0 ]; then
-    echo "X Failed to restore."
-    exit 1
-  else
-    echo "OK snapshot restored successfully."
-  fi
-
 }
 
 show_log(){
