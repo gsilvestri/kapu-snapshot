@@ -17,11 +17,15 @@ bash kapu-snapshot.sh help
 ```
 ##Available commands
 
-    - create
-    - restore
-    - log
-    - schedule
-
+  - create
+- restore
+- log
+- schedule
+	- hourly
+	- daily
+	- weekly
+	- monthly
+    
 ###create
 Command _create_ is for create new snapshot, example of usage:<br>
 `bash kapu-snapshot.sh create`<br>
@@ -44,6 +48,8 @@ Automaticly will pick the last snapshot file in snapshot/ folder to restore the 
 If you want to restore a specific file please (for this version) delete or move the other files in snapshot/ folder.<br>
 You can use the _log_ command to better pick up your restore file.<br>
 <br>
+
+
 ###log
 Display all the snapshots created. <br>
 Example of usage:<br>
