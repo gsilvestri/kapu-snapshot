@@ -49,6 +49,19 @@ If you want to restore a specific file please (for this version) delete or move 
 You can use the _log_ command to better pick up your restore file.<br>
 <br>
 
+Schedule
+
+Schedule snapshot creation periodically, with the available parameters:
+```
+- hourly
+- daily
+- weekly
+- monthly
+Example: bash rise-snapshot.sh schedule daily 
+```
+
+
+
 
 ###log
 Display all the snapshots created. <br>
