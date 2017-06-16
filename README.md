@@ -57,7 +57,7 @@ Schedule snapshot creation periodically, with the available parameters:
 - daily
 - weekly
 - monthly
-Example: bash rise-snapshot.sh schedule daily 
+Example: bash kapu-snapshot.sh schedule daily 
 ```
 
 
