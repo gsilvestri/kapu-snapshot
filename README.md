@@ -10,8 +10,8 @@ v0.3
 Execute the following commands
 ```
 cd ~/
-git clone https://github.com/kapucoin/kapu_snapshot.git
-cd kapu_snapshot
+git clone https://github.com/kapucoin/kapu-snapshot.git
+cd kapu-snapshot
 sudo updatedb
 bash kapu-snapshot.sh help
 ```
